@@ -1,18 +1,39 @@
 import mysql.connector  
-import argparse
+import configparser
+import json
+from deepface import DeepFace
+from deepface.commons import package_utils, folder_utils
 import os
 
-import configparser
+def detect_images(PATH):
+    model = DeepFace.build_model("Facenet")
+    print(PATH)
+    instances = [] 
+
+    embedding = DeepFace.represent(img_path=PATH, model_name="Facenet", enforce_detection=False)[0]["embedding"]
+    objs = DeepFace.analyze(img_path=PATH) 
+    instance = {}
+    instance["img_name"] = os.path.basename(PATH)
+    instance["embedding"] = embedding
+    instance["age"] = objs[0]["age"]
+    instance["dominant_emotion"] = objs[0]["dominant_emotion"]
+    instance["dominant_gender"] = objs[0]["dominant_gender"]
+    instance["dominant_race"] = objs[0]["dominant_race"]
+    #print(instance)
+    
+    return instance
 
 def read_config(database_name):
     config = configparser.ConfigParser()
+    #config.read('../config.ini')
     config.read('config.ini')
     return config[database_name]
 
-# Function to fetch store data from SQL Server
-def connect_database(name):
-    config_data = read_config(name)
+# Function to connect to and insert data into the database
+def connect_database(database_name, instance):
 
+    config_data = read_config(database_name)
+    print(config_data)
     host = config_data['server']
     database = config_data['database']
     username = config_data['username']
@@ -23,37 +44,38 @@ def connect_database(name):
         host=host,
         user=username,
         password=password,
-        database= database
+        database=database
     )
-    
+
     cursor = db_connection.cursor()
 
-    # Define your SELECT query
-    query = "SELECT * FROM testtable"
+    img_name = instance["img_name"]
+    embeddings = instance["embedding"]
+    age = instance["age"]
+    dominant_emotion = instance["dominant_emotion"]
+    dominant_gender = instance["dominant_gender"]
+    dominant_race = instance["dominant_race"]
+     
+    # Convert embeddings to JSON string
+    embeddings_json = json.dumps(embeddings)
+    
+    # Insert into face_meta table
+    insert_statement = "INSERT INTO face_meta (IMG_NAME, EMBEDDING, AGE, DOMINANT_EMOTION, DOMINANT_GENDER, DOMINANT_RACE) VALUES (%s, %s, %s, %s, %s, %s)"
+    insert_args = (img_name, embeddings_json, age, dominant_emotion, dominant_gender, dominant_race)
 
-    # Execute the query
-    cursor.execute(query)
+    cursor.execute(insert_statement, insert_args)
+    db_connection.commit()
 
-    # Fetch all the rows
-    records = cursor.fetchall()
+    cursor.close()
+    db_connection.close()
 
-    # Display the records
-    for record in records:
-        print(record)
-#
-#    for filename, query in queries.items():
-#        try:
-#            cursor.execute(query)
-#            results = cursor.fetchall()
-#            result_string = ''.join([str(row.definition) for row in results])
-            #print(result_string)
-#            result_data.append({'filename': filename, 'data': result_string})
-#        except Exception as e:
-            # Handle exceptions (customize as needed)
-#            print(f"Error executing query for {filename}: {e}")
-
-#    connection.close()
-#    return result_data
-
+#Sample Usage
 if __name__ == "__main__":
-    connect_database('database')
+    # Specify the path to the image you want to process
+    image_path = "../test_dataset/img58.jpg"
+    
+    # Detect information from the image
+    instance = detect_images(image_path)
+    
+    # Connect to the database and insert the detected information
+    connect_database('database', instance)
