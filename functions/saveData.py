@@ -5,6 +5,10 @@ from deepface import DeepFace
 from deepface.commons import package_utils, folder_utils
 import os
 
+from datetime import datetime
+import hashlib
+
+
 def detect_images(PATH):
     model = DeepFace.build_model("Facenet")
     print(PATH)
@@ -60,10 +64,21 @@ def connect_database(database_name, instance):
     embeddings_json = json.dumps(embeddings)
     
     # Insert into face_meta table
-    insert_statement = "INSERT INTO face_meta (IMG_NAME, EMBEDDING, AGE, DOMINANT_EMOTION, DOMINANT_GENDER, DOMINANT_RACE) VALUES (%s, %s, %s, %s, %s, %s)"
-    insert_args = (img_name, embeddings_json, age, dominant_emotion, dominant_gender, dominant_race)
+    current_time = datetime.now()
+    unique_key = hashlib.sha256(str(current_time).encode()).hexdigest()
+
+
+    insert_statement = "INSERT INTO face_meta (ID, IMG_NAME, EMBEDDING, AGE, DOMINANT_EMOTION, DOMINANT_GENDER, DOMINANT_RACE) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    insert_args = (unique_key, img_name, embeddings_json, age, dominant_emotion, dominant_gender, dominant_race)
 
     cursor.execute(insert_statement, insert_args)
+
+    # Insert into face_embeddings table
+    for i, embedding in enumerate(embeddings):
+        insert_statement = "INSERT INTO face_embeddings (FACE_ID, DIMENSION, VALUE) VALUES (%s, %s, %s)"
+        insert_args = (unique_key,i, embedding)
+        cursor.execute(insert_statement, insert_args)
+
     db_connection.commit()
 
     cursor.close()

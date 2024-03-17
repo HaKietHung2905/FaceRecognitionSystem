@@ -1,8 +1,8 @@
 import os
 
-UPLOAD_FOLDER = 'uploads'
+#UPLOAD_FOLDER = 'uploads'
 
-def save_uploaded_image(file):
+def save_uploaded_image(file, UPLOAD_FOLDER):
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
     filename = file.filename

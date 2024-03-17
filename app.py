@@ -11,6 +11,7 @@ from deepface.commons import package_utils, folder_utils
 import functions.saveImages as saveImages
 import functions.saveData as saveData
 import functions.queryDataByString as queryDataByString
+import functions.queryDataByImages as queryDataByImages
 import functions.loadImages as loadImages
 
 app = Flask(__name__)
@@ -26,20 +27,36 @@ def submit_form():
     # Get the text input value
     query_input = request.form.get('text_input')
 
-    query = queryDataByString.get_sql_query(query_input)
-
-    results = queryDataByString.get_images_data('database', query)
-
     image_paths = []
-    for result in results:
-        paths = loadImages.load_images_with_name(result[0], 'static/uploads')
-        image_paths.extend(paths)
 
+    if query_input != '':
+        query = queryDataByString.get_sql_query(query_input)
+        results = queryDataByString.get_images_data('database', query)
+        for result in results:
+            paths = loadImages.load_images_with_name(result[0], 'static/uploads')
+            image_paths.extend(paths)
+    else:
+        file = request.files['image_input']
+        image_path = saveImages.save_uploaded_image(file, 'static/queryImages/')
+        results = queryDataByImages.predictionImages(image_path)
+        for result in results:
+            img_name = result["img_name"]  # Extract img_name from the dictionary
+            paths = loadImages.load_images_with_name(img_name, 'static/uploads')
+            image_paths.extend(paths)
+
+    
+
+    
+
+
+    # Get the images same as images input
+        
     # Returning the image paths as JSON
+    # return image_path
     #return image_paths
     # Redirect to the route that displays the images
     #return query
-    return redirect(url_for('get_image_paths', image_paths=json.dumps(image_paths), query_string=query))
+    return redirect(url_for('get_image_paths', image_paths=json.dumps(image_paths)))
 
 
 @app.route('/get_image_paths')
@@ -70,7 +87,7 @@ def upload_form():
     if file.filename == '':
         return "No selected file"
     
-    image_path = saveImages.save_uploaded_image(file)
+    image_path = saveImages.save_uploaded_image(file, 'static/uploads')
 
     instance = saveData.detect_images(image_path)
 

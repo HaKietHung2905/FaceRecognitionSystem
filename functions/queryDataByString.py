@@ -7,7 +7,7 @@ import functions.readConfig as readConfig
 import mysql.connector  
 #import readConfig as readConfig
 
-os.environ['OPENAI_API_KEY'] = "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"
+os.environ['OPENAI_API_KEY'] = "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"
 
 
 
