@@ -128,11 +128,11 @@ def predictionImages(image_path):
             ) AS inner_subquery
             GROUP BY img_name
         ) AS outer_subquery
-        WHERE distance_squared < 100000
+        WHERE distance_squared < 100
         ORDER BY distance_squared ASC;
         """
     
-    #print (select_statement)
+    print ('Select statement:', select_statement)
     instances = get_images_data('database', select_statement, 2)   
 
     result_df = pd.DataFrame(instances, columns = ["img_name", "distance"])

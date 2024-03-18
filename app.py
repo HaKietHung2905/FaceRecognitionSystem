@@ -31,6 +31,11 @@ def submit_form():
 
     if query_input != '':
         query = queryDataByString.get_sql_query(query_input)
+        #print(query)
+        #Exact_query
+        select_index = query.find("SELECT")
+        query = query[select_index:]
+        print('Query:', query)
         results = queryDataByString.get_images_data('database', query)
         for result in results:
             paths = loadImages.load_images_with_name(result[0], 'static/uploads')
