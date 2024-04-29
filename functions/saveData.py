@@ -3,9 +3,11 @@ import configparser
 import json
 from deepface import DeepFace
 from deepface.commons import package_utils, folder_utils
+
 import os
 
 from datetime import datetime
+from readConfin import read_config
 import hashlib
 
 
@@ -27,11 +29,11 @@ def detect_images(PATH):
     
     return instance
 
-def read_config(database_name):
-    config = configparser.ConfigParser()
-    #config.read('../config.ini')
-    config.read('config.ini')
-    return config[database_name]
+# def read_config(database_name):
+#     config = configparser.ConfigParser()
+#     #config.read('../config.ini')
+#     config.read('config.ini')
+#     return config[database_name]
 
 # Function to connect to and insert data into the database
 def connect_database(database_name, instance):

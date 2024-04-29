@@ -67,6 +67,6 @@ def get_images_data(database_name, query_input):
 # Example usage
 #database_name = "database"
 #query_input = "SELECT img_name, dominant_emotion, age, dominant_gender, dominant_race FROM face_meta WHERE dominant_emotion = 'neutral' AND age BETWEEN 28 AND 38 AND dominant_gender = 'man' AND dominant_race = 'white';"
-#result = get_images_data(database_name, query_input)
+#result = get_images_data(database_name, query_inpu)
 
 #print(result)

@@ -43,7 +43,7 @@ def submit_form():
     else:
         file = request.files['image_input']
         image_path = saveImages.save_uploaded_image(file, 'static/queryImages/')
-        results = queryDataByImages.predictionImages(image_path)
+        results = queryDataByImages.prediction_images(image_path)
         for result in results:
             img_name = result["img_name"]  # Extract img_name from the dictionary
             paths = loadImages.load_images_with_name(img_name, 'static/uploads')
