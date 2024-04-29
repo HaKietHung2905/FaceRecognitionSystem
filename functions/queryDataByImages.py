@@ -76,13 +76,13 @@ def get_images_data(database_name, select_statement, type):
 
     return instances
 
-def findEuclideanDistance(row):
+def find_euclidean_distance(row):
     source = np.array(row['embedding'])
     target = np.array(row['target'])
     distance = (source - target)
     return np.sqrt(np.sum(np.multiply(distance, distance)))
 
-def predictionImages(image_path):
+def prediction_images(image_path):
     target_embedding = DeepFace.represent(img_path = image_path, model_name = "Facenet", enforce_detection= False)[0]["embedding"]
 
     
@@ -97,7 +97,7 @@ def predictionImages(image_path):
     target_duplicated = np.array(my_list*result_df.shape[0])
     result_df['target'] = target_duplicated.tolist()
 
-    result_df['distance'] = result_df.apply(findEuclideanDistance, axis = 1)
+    result_df['distance'] = result_df.apply(find_euclidean_distance, axis = 1)
     result_df = result_df[result_df['distance'] <= 10]
     result_df = result_df.sort_values(by = ['distance']).reset_index(drop = True)
     result_df = result_df.drop(columns = ["embedding", "target"])
