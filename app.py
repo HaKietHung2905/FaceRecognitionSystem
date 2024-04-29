@@ -44,9 +44,12 @@ def submit_form():
         file = request.files['image_input']
         image_path = saveImages.save_uploaded_image(file, 'static/queryImages/')
         results = queryDataByImages.prediction_images(image_path)
+        #print(results)
         for result in results:
             img_name = result["img_name"]  # Extract img_name from the dictionary
+            print(img_name)
             paths = loadImages.load_images_with_name(img_name, 'static/uploads')
+            print(paths)
             image_paths.extend(paths)
 
     
@@ -57,7 +60,7 @@ def submit_form():
     # Get the images same as images input
         
     # Returning the image paths as JSON
-    # return image_path
+    #return results
     #return image_paths
     # Redirect to the route that displays the images
     #return query
