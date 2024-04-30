@@ -13,7 +13,7 @@ import math
 from deepface import DeepFace
 from deepface.commons import package_utils, folder_utils
 
-os.environ['OPENAI_API_KEY'] = "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"
+os.environ['OPENAI_API_KEY'] = "ADD_YOUR_API_KEY_HERE"
 
 
 

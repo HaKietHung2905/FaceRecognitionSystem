@@ -22,7 +22,7 @@ def get_sql_query(input_string):
     llm = ChatOpenAI()
 
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are mySQL expert, convert input string to only SELECT statement with extraction of img_name, dominant_emotion, age, dominant_gender, dominant_race from table face_meta. Answer SQL query only."),
+        ("system", "You are mySQL expert, convert input string to only SELECT top 15 statement with extraction of img_name, dominant_emotion, age, dominant_gender, dominant_race from table face_meta. quey for gender will have 2 variable: man and woman. Answer SQL query only."),
         ("user", input_string)
     ])
 
